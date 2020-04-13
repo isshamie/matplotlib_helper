@@ -1,0 +1,11 @@
+setup.py
+mplh/__init__.py
+mplh/cluster_help.py
+mplh/fig_utils.py
+mplh/notebook_settings.py
+mplh/paper_settings.py
+mplh.egg-info/PKG-INFO
+mplh.egg-info/SOURCES.txt
+mplh.egg-info/dependency_links.txt
+mplh.egg-info/requires.txt
+mplh.egg-info/top_level.txt
