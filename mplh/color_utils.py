@@ -4,7 +4,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 #from .fig_utils import legend_from_color
 import brewer2mpl
-from .glasbey import Glasbey
+#from .glasbey import Glasbey
+
+try:
+    # this works if you import Glasbey
+    from mplh.glasbey import Glasbey
+except ImportError:
+    # this works if you run __main__() function
+    from .glasbey import Glasbey
 
 
 def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,

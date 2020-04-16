@@ -7,9 +7,25 @@ import brewer2mpl
 import sys
 #sys.path.append("external/glasbey")
 
-from .fig_utils import legend_from_color
-from .color_utils import *
-from .glasbey import Glasbey
+try:
+    from mplh.fig_utils import legend_from_color
+except ImportError:
+    from .fig_utils import legend_from_color
+
+
+try:
+    from mplh.color_utils import *
+except ImportError:
+    from .color_utils import *
+
+
+try:
+    # this works if you import Glasbey
+    from mplh.glasbey import Glasbey
+except ImportError:
+    # this works if you run __main__() function
+    from .glasbey import Glasbey
+
 
 
 def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
