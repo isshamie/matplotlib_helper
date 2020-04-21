@@ -15,13 +15,17 @@ except ImportError:
 
 
 def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,
-               white_name:str = "N/A", n_seq = 10) -> [dict, np.array]:
+               white_name:str = "N/A", use_black:bool=False,
+               black_name:str = "N/A",
+               n_seq = 10) -> [dict, np.array]:
     """
     :param scheme: {'sequential', 'divergent', 'categorical'}
     :param n_colors: int
         Number of colors needed
     :param use_white: bool
         If True, white will also be geneated, which will be the first index.
+    :param use_black: bool
+        If True, white will also be geneated, which will be the second index.
     :return:
     """
     if scheme == "categorical":
@@ -29,16 +33,19 @@ def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,
             print("Need a list of names to create dictionary")
             raise TypeError
         gb = Glasbey()
-        p = gb.generate_palette(size=n_colors + 1)
+        p = gb.generate_palette(size=n_colors + 2)
         # Needed for Float problems
         p[p > 1] = 1
         p[p < 0] = 0
-        color_map = {name: p[ind + 1] for ind, name in
+        color_map = {name: p[ind + 2] for ind, name in
                      enumerate(set(names))}
         if use_white:
             color_map[white_name] = p[0]
+        if use_black:
+            color_map[black_name] = p[1]
+
         name_map = {val: ind for ind, val in enumerate(names)}
-        return color_map, name_map, p
+        return color_map, name_map
 
     elif scheme == 'divergent':
         bmap = brewer2mpl.get_map('Divergent', 'Blues', n_seq)
