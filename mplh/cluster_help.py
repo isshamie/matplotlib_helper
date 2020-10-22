@@ -12,6 +12,7 @@ try:
 except ImportError:
     from .fig_utils import legend_from_color
 
+print('here')
 
 try:
     from mplh.color_utils import *
@@ -27,11 +28,10 @@ except ImportError:
     from .glasbey import Glasbey
 
 
-
 def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
                  fsave=None, to_z=False, to_col_clust=True,
                  to_row_clust=True, name=None, col_names=True,
-                 row_names=True, to_legend=True, method="average",
+                 row_names=True, to_legend=True, method="average", white_name="WT", cmap=None,
                  **clust_kws):
     """Clusters dataframe, and includes different layers of metadata about the row and column da
 
@@ -40,6 +40,8 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
     name: Label of the graph
     fsave: Name to save the figure. Default is None, which will not save
     {row,col}_names: To keep the labels or not for the columns
+
+    Returns: g, a seaborn ClusterGrid
     """
 
     z = None
@@ -48,19 +50,20 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
 
     if col_meta is not None:
         col_meta_color, col_color_map, name_map, p, labels = create_color_df(
-            col_meta, use_white=True, white_name="WT")
+            col_meta, use_white=True, white_name=white_name)
     else:
         col_meta_color = None
 
     if row_meta is not None:
         row_meta_color, row_color_map, name_map, p, labels = create_color_df(
-            row_meta, use_white=True, white_name="WT")
+            row_meta, use_white=True, white_name=white_name)
     else:
         row_meta_color = None
 
+    print('cmap', cmap)
     g = sns.clustermap(df, z_score=z, col_cluster=to_col_clust,
         row_cluster=to_row_clust, col_colors=col_meta_color,
-        row_colors=row_meta_color, method=method, cmap="RdBu_r",
+        row_colors=row_meta_color, method=method, cmap=cmap,
         **clust_kws)
 
     g.ax_heatmap.set_xticklabels(g.ax_heatmap.get_xticklabels(),
@@ -74,10 +77,8 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
         g.ax_heatmap.set_yticklabels("")
 
     if to_legend is not None and col_meta_color is not None:
-        print(col_color_map)
         legend_from_color(col_color_map, curr_ax=g.ax_col_dendrogram)
     if to_legend is not None and row_meta_color is not None:
-        print(row_color_map)
         legend_from_color(row_color_map,
                           curr_ax=g.ax_heatmap)  # g.ax_row_dendrogram)
 
