@@ -1,9 +1,13 @@
+README.md
 setup.py
 mplh/__init__.py
 mplh/cluster_help.py
+mplh/color_utils.py
 mplh/fig_utils.py
+mplh/glasbey.py
+mplh/load.py
 mplh/notebook_settings.py
-mplh/paper_settings.py
+mplh/view_palette.py
 mplh.egg-info/PKG-INFO
 mplh.egg-info/SOURCES.txt
 mplh.egg-info/dependency_links.txt

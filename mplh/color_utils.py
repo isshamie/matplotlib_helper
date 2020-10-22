@@ -17,7 +17,7 @@ except ImportError:
 def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,
                white_name:str = "N/A", use_black:bool=False,
                black_name:str = "N/A",
-               n_seq = 10) -> [dict, np.array]:
+               n_seq = 10,return_p=False) -> [dict, np.array]:
     """
     :param scheme: {'sequential', 'divergent', 'categorical'}
     :param n_colors: int
@@ -45,8 +45,9 @@ def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,
             color_map[black_name] = p[1]
 
         name_map = {val: ind for ind, val in enumerate(names)}
-        return color_map, name_map
-
+        if return_p:
+            return color_map, name_map,p
+        else: return color_map, name_map
     elif scheme == 'divergent':
         bmap = brewer2mpl.get_map('Divergent', 'Blues', n_seq)
         color_map = bmap.mpl_colormap
@@ -61,8 +62,6 @@ def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,
     return color_map
 
 
-
-
 def create_color_df(meta_df, use_white: bool = False,
                     white_name: str = "N/A"):
     """Assumes each column is categorical for now. Creates a df with the same dimensions but now in its colors, along with the legend map."""
@@ -75,7 +74,8 @@ def create_color_df(meta_df, use_white: bool = False,
     color_map, name_map, p = get_colors("categorical", names=labels,
                                         n_colors=n_colors,
                                         use_white=use_white,
-                                        white_name=white_name)
+                                        white_name=white_name,return_p=True)
+
     for col in meta_df_color.columns.values:
         meta_df_color[col] = meta_df[col].map(color_map)
 
