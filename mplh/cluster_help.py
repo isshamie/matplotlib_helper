@@ -31,8 +31,8 @@ except ImportError:
 def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
                  fsave=None, to_z=False, to_col_clust=True,
                  to_row_clust=True, name=None, col_names=True,
-                 row_names=True, to_legend=True, method="average", white_name="WT", cmap=None,
-                 **clust_kws):
+                 row_names=True, to_legend=True, method="average", white_name="WT", cmap=None, sep_clr_map=False,
+                 scheme="categorical", **clust_kws):
     """Clusters dataframe, and includes different layers of metadata about the row and column da
 
     df: Dataframe to cluster on
@@ -49,14 +49,14 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
         z = 0
 
     if col_meta is not None:
-        col_meta_color, col_color_map, name_map, p, labels = create_color_df(
-            col_meta, use_white=True, white_name=white_name)
+        col_meta_color, col_color_map, name_map, p, labels = wrap_create_color_df(
+            col_meta, use_white=True, white_name=white_name, scheme=scheme, sep_clr_map=False)
     else:
         col_meta_color = None
 
     if row_meta is not None:
-        row_meta_color, row_color_map, name_map, p, labels = create_color_df(
-            row_meta, use_white=True, white_name=white_name)
+        row_meta_color, row_color_map, name_map, p, labels = wrap_create_color_df(
+            row_meta, use_white=True, white_name=white_name, scheme=scheme, sep_clr_map=False)
     else:
         row_meta_color = None
 

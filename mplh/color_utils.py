@@ -62,8 +62,16 @@ def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,
     return color_map
 
 
+def wrap_create_color_df(meta_df, use_white: bool = False,
+                         white_name: str = "N/A", scheme="categorical", sep_clr_map=False):
+    if sep_clr_map:
+        return create_color_df(meta_df, use_white, white_name, scheme=scheme)
+    else:
+        return create_color_df_sepMap(meta_df, use_white, white_name, scheme=scheme)
+
+
 def create_color_df(meta_df, use_white: bool = False,
-                    white_name: str = "N/A"):
+                    white_name: str = "N/A", scheme="categorical"):
     """Assumes each column is categorical for now. Creates a df with the same dimensions but now in its colors, along with the legend map."""
     meta_df_color = meta_df.copy()
     n_colors = 0
@@ -71,12 +79,41 @@ def create_color_df(meta_df, use_white: bool = False,
     for col in meta_df_color.columns.values:
         n_colors += len(meta_df[col].unique())
         labels += list(set(meta_df[col].values))
-    color_map, name_map, p = get_colors("categorical", names=labels,
+    color_map, name_map, p = get_colors(scheme, names=labels,
                                         n_colors=n_colors,
                                         use_white=use_white,
-                                        white_name=white_name,return_p=True)
+                                        white_name=white_name, return_p=True)
 
     for col in meta_df_color.columns.values:
         meta_df_color[col] = meta_df[col].map(color_map)
 
     return meta_df_color, color_map, name_map, p, labels
+
+
+def create_color_df_sepMap(meta_df, use_white: bool = False,
+                    white_name: str = "N/A", scheme=("categorical")):
+    """TODO: Allows for separate color maps for each column and separate scehmes"""
+    meta_df_color = meta_df.copy()
+    all_labels = []
+    all_p = []
+    all_color_map = {}
+    all_cols = meta_df_color.columns.values
+    if type(scheme) == str:
+        scheme = {i:scheme for i in all_cols}
+
+    for col in meta_df_color.columns.values:
+        n_colors = len(meta_df[col].unique())
+        labels = list(set(meta_df[col].values))
+        color_map, name_map, p = get_colors(scheme[col], names=labels,
+                                            n_colors=n_colors,
+                                            use_white=use_white,
+                                            white_name=white_name,return_p=True)
+        for c in color_map:
+            if c in all_color_map:
+                all_color_map[f"{col}_{c}"] = color_map[c]
+            else:
+                all_color_map[c] = color_map[c]
+        meta_df_color[col] = meta_df[col].map(color_map)
+        all_labels.append(labels)
+        all_p.append(p)
+    return meta_df_color, all_color_map, name_map, p, labels
