@@ -117,3 +117,152 @@ def create_color_df_sepMap(meta_df, use_white: bool = False,
         all_labels.append(labels)
         all_p.append(p)
     return meta_df_color, all_color_map, name_map, p, labels
+
+
+def wrap_create_color_df_v02(meta_df, clr_types_d):
+    clr_map_df = meta_df.copy() # Colors
+    anno_labels_d ={}
+    anno_lut_d = {}
+
+    # Generate color map keys:
+    clr_keys = {}
+    seq_cnt, div_cnt, cat_cnt = 0, 0, 0
+    for c in clr_types_d:
+        if (clr_types_d[c])=='sequential':
+            seq_cnt+=1
+            clr_keys[c] = seq_cnt
+        elif (clr_types_d[c])=='divergent':
+            div_cnt+=1
+            clr_keys[c] = div_cnt
+        elif (clr_types_d[c])=='categorical':
+            cat_cnt+=1
+            clr_keys[c] = cat_cnt
+
+    for c in meta_df.columns:
+        clr_map, anno_labels, anno_lut = create_color_df_v02(meta_df, c,
+                                                             clr_type=clr_types_d[c],
+                                                             clr_key=clr_keys[c],
+                                                             add_suffix=False)
+        clr_map_df[c] = clr_map
+        anno_labels_d[c] = anno_labels
+        anno_lut_d[c] = anno_lut
+    return clr_map_df, anno_labels_d, anno_lut_d
+
+
+def create_color_df_v02(meta_df, col, clr_key=1, clr_type='sequential',
+                        add_suffix=True):
+    """ Create color values for each column in meta_df
+
+    :param meta_df: DataFrame where each index is an observation and each column is a feature
+    :param col: Which column to use in dataframe
+    :param clr_key: int to map to the color maps defined here
+    :param clr_type: {'sequential', 'divergenet', 'categorical'
+    :return:
+    """
+
+    # First get the labels
+    anno_labels = np.sort(meta_df[col].unique())
+
+    # Create the palettes.
+    seq_clr_keys = {
+        1: sns.cubehelix_palette(len(anno_labels), light=.9, dark=.2,
+                                 reverse=True, rot=.1, start=2.8),
+        2: sns.cubehelix_palette(len(anno_labels), light=.9, dark=.2,
+                                 reverse=True, rot=.1, start=4.2),
+        3: sns.cubehelix_palette(len(anno_labels), light=.9, dark=.2,
+                                 reverse=True, rot=.3, start=0)}
+    divergent_clr_keys = {
+        1: sns.diverging_palette(240, 10, n=len(anno_labels)),
+        2: sns.diverging_palette(150, 275, s=80, l=55,
+                                 n=len(anno_labels))}
+    cat_clr_keys = {1: sns.color_palette("Set2"),
+                    2: sns.color_palette("Paired")}
+
+    if clr_type == "sequential":
+        anno_pal = seq_clr_keys[clr_key]
+    elif clr_type == "divergent":
+        anno_pal = divergent_clr_keys[clr_key]
+    elif clr_type == "categorical":
+        anno_pal = cat_clr_keys[clr_key]
+    else:
+        raise ValueError
+
+    # anno_lut relates the labels to the colors, and anno_colors just puts into series
+    anno_lut = dict(zip(map(str, anno_labels), anno_pal))
+    anno_colors = pd.Series(anno_lut)
+
+    # Create series of index to color
+    clr_ser = meta_df[col].apply(lambda x: anno_colors.loc[str(x)])
+
+    if add_suffix:
+        meta_df[f"{col}_map"] = clr_ser
+        return meta_df, anno_labels, anno_lut
+    else:
+        return clr_ser, anno_labels, anno_lut
+
+
+def plot_legends(labels_d, lut_d, titles_d):
+    plt.legend(loc='center left', bbox_to_anchor=(1.1, 0.5))
+
+    legends = []
+    for d in labels_d:
+        legends.append(create_legend(labels_d[d], lut_d[d],
+                        n_labs=8, title=titles_d[d]))
+    # g.ax_heatmap.legend(bbox_to_anchor=(2, 0.5), ncol=6,
+    #                     loc="center right", borderaxespad=1)
+    return legends
+
+
+
+def create_legend(anno_labels, anno_lut, title, loc="best", n_labs=-1):
+    handles = []
+    if n_labs == -1 or n_labs > len(anno_labels):
+        n_labs = len(anno_labels)
+
+    step = int(np.round(len(anno_labels) / n_labs))
+
+    for label in anno_labels[::step]:
+        if type(label) == str:
+            nm = f'{label}'
+        else:
+            nm=f'{label:.3g}'
+        handles.append(plt.Line2D([0, 0], [0, 0], color=anno_lut[str(label)],
+                                  label=nm, linewidth=0))
+            # g.ax_heatmap.bar(0, 0, color=anno_lut[str(label)],
+            #                  label=f'{label}', linewidth=0)
+
+            # g.ax_heatmap.bar(0, 0, color=anno_lut[str(label)],
+            #                  label=f'{label:.3g}',
+            #                  linewidth=0)  # g.ax_col_dendrogram.bar(0, 0, color=anno_lut[str(label)],  #                         label=label, linewidth=0)  # plt.bar(0, 0, color=anno_lut[str(label)],  #                 label=label, linewidth=0)
+    legend = plt.legend(handles=handles, loc=loc, title=title)
+    return legend
+
+
+def wrap_legends():
+    return
+
+
+
+
+def plot_continuous_legend(g, anno_labels, anno_lut, n_labs=-1,
+                           title=None, loc='right'):
+    if n_labs == -1 or n_labs > len(anno_labels):
+        n_labs = len(anno_labels)
+
+    step = int(np.round(len(anno_labels) / n_labs))
+
+    # if title is not None:
+    #     tit = g.ax_heatmap.bar(0, 0,label=title, linewidth=0)
+    for label in anno_labels[::step]:
+        if type(label) == str:
+            g.ax_heatmap.bar(0, 0, color=anno_lut[str(label)],
+                             label=f'{label}', linewidth=0)
+        else:
+            g.ax_heatmap.bar(0, 0, color=anno_lut[str(label)],
+                             label=f'{label:.3g}',
+                             linewidth=0)  # g.ax_col_dendrogram.bar(0, 0, color=anno_lut[str(label)],  #                         label=label, linewidth=0)  # plt.bar(0, 0, color=anno_lut[str(label)],  #                 label=label, linewidth=0)
+
+    g.ax_heatmap.legend(bbox_to_anchor=(1.4, 1.2), ncol=4, loc=loc,
+                        borderaxespad=1)
+    # g.ax_col_dendrogram.legend(ncol=4 )#loc="best", ncol=6)
+    return g.ax_heatmap.legend()
