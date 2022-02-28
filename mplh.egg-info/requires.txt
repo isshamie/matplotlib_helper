@@ -1,3 +1,2 @@
-matplotlib>=2.0.0
 colorspacious
 brewer2mpl

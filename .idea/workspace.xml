@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="28a03013-d9e9-457f-8e85-0715597a2218" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/matplotlib_helper.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/matplotlib_helper.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/metadata.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mplh.egg-info/requires.txt" beforeDir="false" afterPath="$PROJECT_DIR$/mplh.egg-info/requires.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mplh/cluster_help.py" beforeDir="false" afterPath="$PROJECT_DIR$/mplh/cluster_help.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mplh/color_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/mplh/color_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,7 +177,7 @@
       <workItem from="1587001788898" duration="1725000" />
       <workItem from="1587446394223" duration="557000" />
       <workItem from="1645820478949" duration="3109000" />
-      <workItem from="1646071461397" duration="250000" />
+      <workItem from="1646071461397" duration="5638000" />
     </task>
     <servers />
   </component>

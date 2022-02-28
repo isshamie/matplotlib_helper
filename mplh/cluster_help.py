@@ -32,8 +32,7 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
                  fsave=None, to_z=False, to_col_clust=True,
                  to_row_clust=True, name=None, col_names=True,
                  row_names=True, to_legend=True, method="average", white_name="WT", cmap=None, sep_clr_map=False,
-                 row_clr_schemes='categorical',
-                 scheme="categorical", **clust_kws):
+                 row_clr_schemes='categorical', col_clr_schemes='categorical', **clust_kws):
     """Clusters dataframe, and includes different layers of metadata about the row and column da
 
     df: Dataframe to cluster on
@@ -51,7 +50,7 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
 
     if col_meta is not None:
         col_titles_d = {c: c for c in col_meta.columns}
-        col_meta_color, col_labels_d, col_color_map = wrap_create_color_df_v02(row_meta, row_clr_schemes)
+        col_meta_color, col_labels_d, col_color_map = wrap_create_color_df_v02(col_meta, col_clr_schemes)
         # col_meta_color, col_color_map, name_map, p, labels = wrap_create_color_df(
         #     col_meta, use_white=True, white_name=white_name, scheme=scheme, sep_clr_map=False)
     else:
@@ -65,10 +64,10 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
     else:
         row_meta_color = None
 
-    print('cmap', cmap)
+    #print('cmap', cmap)
     g = sns.clustermap(df, z_score=z, col_cluster=to_col_clust,
         row_cluster=to_row_clust, col_colors=col_meta_color,
-        row_colors=row_meta_color, method=method, cmap=cmap,
+        row_colors=row_meta_color, method=method,
         **clust_kws)
 
     g.ax_heatmap.set_xticklabels(g.ax_heatmap.get_xticklabels(),
@@ -82,15 +81,19 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
         g.ax_heatmap.set_yticklabels("")
 
     if to_legend is not None and col_meta_color is not None:
-        plot_legends(col_labels_d, col_color_map, col_titles_d)
+        plot_legends(col_labels_d, col_color_map, col_titles_d,
+                     ax=g.ax_col_dendrogram, loc="upper right")
         #legend_from_color(col_color_map, curr_ax=g.ax_col_dendrogram)
     if to_legend is not None and row_meta_color is not None:
-        plot_legends(row_labels_d, row_color_map, row_titles_d)
+        plot_legends(row_labels_d, row_color_map, row_titles_d,
+                    ax=g.ax_row_dendrogram, loc='lower left')
         # legend_from_color(row_color_map,
         #                   curr_ax=g.ax_heatmap)  # g.ax_row_dendrogram)
 
     if name is not None:
+        print('name', name)
         g.fig.suptitle(name)
+    print("saving")
     if fsave is not None:
         fsave = fsave.replace(".png", "")
         g.savefig(fsave + ".png", bbox_inches='tight', transparent=True,
@@ -99,7 +102,6 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
                   markerfacecolor="None")
         g.savefig(fsave + ".pdf", bbox_inches='tight', transparent=True,
                   markerfacecolor="None")
-
     return g
 
 
