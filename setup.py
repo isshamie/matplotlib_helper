@@ -16,7 +16,7 @@ __version__ = '0.1.0'
 setup(
     name              = 'mplh',
     version           = __version__,
-    install_requires  = ['matplotlib>=2.0.0','colorspacious','brewer2mpl'],
+    install_requires  = ['colorspacious','brewer2mpl'],
     packages          = ['mplh'],
     cmdclass          = {'install': new_install},
     package_data      = {'package_name/styles':[

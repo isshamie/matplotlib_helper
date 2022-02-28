@@ -1,0 +1,9 @@
+name: mplh
+dependencies:
+  - pip
+  - python>=3
+  - seaborn
+  - matplotlib>=2.0.0
+  - jupyter
+  - numpy
+  - pandas
