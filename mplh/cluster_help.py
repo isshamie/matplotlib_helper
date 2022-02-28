@@ -86,7 +86,7 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
         #legend_from_color(col_color_map, curr_ax=g.ax_col_dendrogram)
     if to_legend is not None and row_meta_color is not None:
         plot_legends(row_labels_d, row_color_map, row_titles_d,
-                    ax=g.ax_row_dendrogram, loc='lower left')
+                    ax=g.ax_heatmap, loc='lower left')
         # legend_from_color(row_color_map,
         #                   curr_ax=g.ax_heatmap)  # g.ax_row_dendrogram)
 

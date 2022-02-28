@@ -212,26 +212,21 @@ def plot_legends(labels_d, lut_d, titles_d, ax=None, loc="best"):
         ax = plt.gca()
 
     legends = []
-    loc_keys = ["lower left", "center left", "upper left", "left"]
+
+    box_keys = [1-(i*1/len(labels_d)) for i in range(len(labels_d))]
+    print('loc keys', box_keys)
     count = 0
     for d in labels_d:
         # create_legend(labels_d[d], lut_d[d],
         #               n_labs=8, title=titles_d[d], ax=ax, loc=loc)
         legends.append(create_legend(labels_d[d], lut_d[d],
-                        n_labs=8, title=titles_d[d], ax=ax, loc=loc_keys[count],))
+                        n_labs=8, title=titles_d[d], ax=ax, bbox_y=box_keys[count],))
         count+=1
-    # g.ax_heatmap.legend(bbox_to_anchor=(2, 0.5), ncol=6,
-    #                     loc="center right", borderaxespad=1)
-        #ax.legend(legends, loc='center left', bbox_to_anchor=(1.1, 0.5))
         ax.add_artist(legends[-1]) #, loc=loc, bbox_to_anchor=(1.1, 0.5))
     return
 
 
-def create_legend(anno_labels, anno_lut, title, loc="best", n_labs=-1, ax=None):
-
-    # for x in anno_lut:
-    #     anno_lut[x].append(0.99)
-
+def create_legend(anno_labels, anno_lut, title, bbox_y=0.5, n_labs=-1, ax=None):
     if ax is None:
         ax = plt.gca()
     handles = []
@@ -245,18 +240,12 @@ def create_legend(anno_labels, anno_lut, title, loc="best", n_labs=-1, ax=None):
             nm = f'{label}'
         else:
             nm=f'{label:.3g}'
-        # handles.append(plt.Line2D([0], [0], color=anno_lut[str(label)],
-        #                           linewidth=2))
+
         handles.append(Patch(facecolor=[float(x) for x in anno_lut[str(label)]], label=nm))
         labels.append(nm)
-            # g.ax_heatmap.bar(0, 0, color=anno_lut[str(label)],
-            #                  label=f'{label}', linewidth=0)
 
-            # g.ax_heatmap.bar(0, 0, color=anno_lut[str(label)],
-            #                  label=f'{label:.3g}',
-            #                  linewidth=0)  # g.ax_col_dendrogram.bar(0, 0, color=anno_lut[str(label)],  #                         label=label, linewidth=0)  # plt.bar(0, 0, color=anno_lut[str(label)],  #                 label=label, linewidth=0)
-    curr_legend = ax.legend(handles=handles, loc=loc, title=title)
-    #legend = ax.legend(handles=handles, loc=loc, title=title, ncol=2)
+    curr_legend = ax.legend(handles=handles, loc="center", title=title, ncol=2,
+                            bbox_to_anchor=(1.4, bbox_y),)
     return curr_legend
 
 
