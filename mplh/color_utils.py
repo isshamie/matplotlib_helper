@@ -60,8 +60,8 @@ def get_colors(scheme: str, names=None, n_colors:int = -1, use_white:bool=False,
     else:
         print("scheme needs to be from catgorical, divergent, or sequential")
         raise TypeError
-
     return color_map
+
 
 
 def wrap_create_color_df(meta_df, use_white: bool = False,
@@ -127,7 +127,7 @@ def wrap_create_color_df_v02(meta_df, clr_types_d):
     anno_lut_d = {}
 
     # Generate color map keys:
-    print(clr_types_d, type(clr_types_d) == str)
+    #print(clr_types_d, type(clr_types_d) == str)
     if type(clr_types_d) == str:
         clr_types_d = {x:clr_types_d for x in meta_df.columns}
 
@@ -153,6 +153,26 @@ def wrap_create_color_df_v02(meta_df, clr_types_d):
         anno_labels_d[c] = anno_labels
         anno_lut_d[c] = anno_lut
     return clr_map_df, anno_labels_d, anno_lut_d
+
+
+def get_glasbey_colors(n_colors, names, white_name:str = "N/A", use_black:bool=False,
+                       black_name:str = "N/A", use_white:bool=False, palette=sns.color_palette('Dark2')):
+    if names is None:
+        print("Need a list of names to create dictionary")
+        raise TypeError
+    names = [str(x) for x in names]
+    gb = Glasbey(base_palette=palette)
+    anno_pal = gb.generate_palette(size=n_colors + 2)
+    # Needed for Float problems
+    anno_pal[anno_pal > 1] = 1
+    anno_pal[anno_pal < 0] = 0
+    color_map = {name: anno_pal[ind + 2] for ind, name in
+                 enumerate(set(names))}
+    if use_white:
+        color_map[white_name] = anno_pal[0]
+    if use_black:
+        color_map[black_name] = anno_pal[1]
+    return color_map
 
 
 def create_color_df_v02(meta_df, col, clr_key=1, clr_type='sequential',
@@ -182,21 +202,27 @@ def create_color_df_v02(meta_df, col, clr_key=1, clr_type='sequential',
         2: sns.diverging_palette(150, 275, s=80, l=55,
                                  n=len(anno_labels))}
     cat_clr_keys = {1: sns.color_palette("Set2"),
-                    2: sns.color_palette("Paired")}
+                    2: sns.color_palette("Dark2"),
+                    3: sns.color_palette("Paired"),
+                    4: sns.color_palette("tab10")}
+    # cat_clr_keys = {1: "dark2",
+    #                 2: "set1",
+    #                 3: "set2"}
 
     if clr_type == "sequential":
-        anno_pal = seq_clr_keys[clr_key]
+        anno_pal = seq_clr_keys[((clr_key-1) % len(seq_clr_keys)+1)]
+        anno_lut = dict(zip(map(str, anno_labels), anno_pal))
     elif clr_type == "divergent":
-        anno_pal = divergent_clr_keys[clr_key]
+        anno_pal = divergent_clr_keys[((clr_key-1)%len(divergent_clr_keys)+1)]
+        anno_lut = dict(zip(map(str, anno_labels), anno_pal))
     elif clr_type == "categorical":
-        anno_pal = cat_clr_keys[clr_key]
+        base_pal = cat_clr_keys[((clr_key-1)%len(cat_clr_keys)+1)]
+        anno_lut = get_glasbey_colors(len(anno_labels), anno_labels, palette=base_pal)
     else:
         raise ValueError
 
     # anno_lut relates the labels to the colors, and anno_colors just puts into series
-    anno_lut = dict(zip(map(str, anno_labels), anno_pal))
     anno_colors = pd.Series(anno_lut)
-
     # Create series of index to color
     clr_ser = meta_df[col].apply(lambda x: anno_colors.loc[str(x)])
 
@@ -207,26 +233,42 @@ def create_color_df_v02(meta_df, col, clr_key=1, clr_type='sequential',
         return clr_ser, anno_labels, anno_lut
 
 
-def plot_legends(labels_d, lut_d, titles_d, ax=None, loc="best"):
+def plot_legends(labels_d, lut_d, titles_d, ax=None, scheme=None, axis="row"):
     if ax is None:
         ax = plt.gca()
 
     legends = []
+    if axis=="row":
+        box_keys = [1-(i*1/len(labels_d)) for i in range(len(labels_d))]
+    else:
+        box_keys = [1-(i*1/len(labels_d)) for i in range(len(labels_d))]
 
-    box_keys = [1-(i*1/len(labels_d)) for i in range(len(labels_d))]
-    print('loc keys', box_keys)
     count = 0
+    if type(scheme) == str:
+        scheme = {i:scheme for i in labels_d.keys()}
+    #print('dat_type', scheme)
     for d in labels_d:
         # create_legend(labels_d[d], lut_d[d],
         #               n_labs=8, title=titles_d[d], ax=ax, loc=loc)
-        legends.append(create_legend(labels_d[d], lut_d[d],
-                        n_labs=8, title=titles_d[d], ax=ax, bbox_y=box_keys[count],))
+
+        if scheme is not None and scheme[d] == "categorical":
+            #print(scheme[d])
+            if len(labels_d[d]) > 16:
+                print("Using only 16 of the labels for legend")
+            n_labs = 16 # len(labels_d[d])
+        else:
+            n_labs = 8
+        if axis == "row":
+            legends.append(create_legend(labels_d[d], lut_d[d],
+                            n_labs=n_labs, title=titles_d[d], ax=ax, bbox_y=box_keys[count], bbox_x=1.4))
+        else:
+            legends.append(create_legend(labels_d[d], lut_d[d], n_labs=n_labs, title=titles_d[d], ax=ax, bbox_x=box_keys[count], bbox_y=1.4))
         count+=1
         ax.add_artist(legends[-1]) #, loc=loc, bbox_to_anchor=(1.1, 0.5))
     return
 
 
-def create_legend(anno_labels, anno_lut, title, bbox_y=0.5, n_labs=-1, ax=None):
+def create_legend(anno_labels, anno_lut, title, bbox_x=1.4, bbox_y=0.5, n_labs=-1, ax=None):
     if ax is None:
         ax = plt.gca()
     handles = []
@@ -245,7 +287,7 @@ def create_legend(anno_labels, anno_lut, title, bbox_y=0.5, n_labs=-1, ax=None):
         labels.append(nm)
 
     curr_legend = ax.legend(handles=handles, loc="center", title=title, ncol=2,
-                            bbox_to_anchor=(1.4, bbox_y),)
+                            bbox_to_anchor=(bbox_x, bbox_y),)
     return curr_legend
 
 

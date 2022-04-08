@@ -115,7 +115,7 @@ class Glasbey:
             d = np.linalg.norm((self.colors - self.colors[0, :]), axis=1)
             self.colors = self.colors[d > MIN_DISTANCE_TO_BLACK, :]
 
-    def generate_palette(self, size):
+    def generate_palette(self, size: object) -> object:
         """
         Return palette in sRGB1 format.
 

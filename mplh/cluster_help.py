@@ -12,7 +12,7 @@ try:
 except ImportError:
     from .fig_utils import legend_from_color
 
-print('here')
+
 
 try:
     from mplh.color_utils import *
@@ -40,7 +40,7 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
     name: Label of the graph
     fsave: Name to save the figure. Default is None, which will not save
     {row,col}_names: To keep the labels or not for the columns
-
+    {row,col}_clr_schemes: Dictionary of the {row,col} meta column to either 'sequential', 'categorical', or 'divergent'. If a string, will apply to all columns.
     Returns: g, a seaborn ClusterGrid
     """
 
@@ -81,19 +81,23 @@ def plot_cluster(df: pd.DataFrame, row_meta=None, col_meta=None,
         g.ax_heatmap.set_yticklabels("")
 
     if to_legend is not None and col_meta_color is not None:
-        plot_legends(col_labels_d, col_color_map, col_titles_d,
-                     ax=g.ax_col_dendrogram, loc="upper right")
+        if row_meta_color is None: # use the row location if not used, gives more space.
+            plot_legends(col_labels_d, col_color_map, col_titles_d, scheme=col_clr_schemes,
+                         ax=g.ax_col_dendrogram, axis="row")
+        else:
+            plot_legends(col_labels_d, col_color_map, col_titles_d, scheme=col_clr_schemes,
+                         ax=g.ax_col_dendrogram, axis="col")
         #legend_from_color(col_color_map, curr_ax=g.ax_col_dendrogram)
     if to_legend is not None and row_meta_color is not None:
         plot_legends(row_labels_d, row_color_map, row_titles_d,
-                    ax=g.ax_heatmap, loc='lower left')
+                     scheme=row_clr_schemes,
+                     ax=g.ax_heatmap, axis="row")
         # legend_from_color(row_color_map,
         #                   curr_ax=g.ax_heatmap)  # g.ax_row_dendrogram)
 
     if name is not None:
         print('name', name)
         g.fig.suptitle(name)
-    print("saving")
     if fsave is not None:
         fsave = fsave.replace(".png", "")
         g.savefig(fsave + ".png", bbox_inches='tight', transparent=True,
