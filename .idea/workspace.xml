@@ -5,8 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mplh/cluster_help.py" beforeDir="false" afterPath="$PROJECT_DIR$/mplh/cluster_help.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mplh/color_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/mplh/color_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tutorials/.ipynb_checkpoints/cluster_with_annotations-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tutorials/.ipynb_checkpoints/cluster_with_annotations-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tutorials/cluster_with_annotations.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tutorials/cluster_with_annotations.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mplh/glasbey.py" beforeDir="false" afterPath="$PROJECT_DIR$/mplh/glasbey.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -175,7 +174,8 @@
       <workItem from="1587001788898" duration="1725000" />
       <workItem from="1587446394223" duration="557000" />
       <workItem from="1645820478949" duration="3109000" />
-      <workItem from="1646071461397" duration="6389000" />
+      <workItem from="1646071461397" duration="6446000" />
+      <workItem from="1647459133165" duration="3741000" />
     </task>
     <servers />
   </component>
